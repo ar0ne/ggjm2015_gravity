@@ -1,0 +1,4 @@
+bower_components/*
+!bower_components/phaser/build/phaser.min.js
+develop/tmp/*
+node_modules/*
