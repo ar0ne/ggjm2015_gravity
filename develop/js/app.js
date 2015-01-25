@@ -13,9 +13,11 @@
         cursors,
         map,
         layer,
+        splashscreen,
         level_bg,
         stars,
         heart,
+        hearts,
         music,
         coins,
         lives       = 3,
@@ -79,6 +81,9 @@
      game.load.audio('boden', ['assets/sounds/theme.mp3', 'assets/sounds/theme.ogg']);
 
 
+     game.load.spritesheet( 'splashscreen', 'assets/res/ersh.png', 32, 32);
+
+
 
     }
 
@@ -86,18 +91,25 @@
 
     function load_menu () {
 
-      
         game.stage.backgroundColor = '#BCD6B4';
 
-        menu_bg = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'menu_bg');
+
+        if( game.world.width === 800 ) {
+            menu_bg = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'menu_bg');
+            button = game.add.button(game.world.width / 2.8 , game.world.height / 1.7, 'start_button', actionOnClick);
+        } else {
+            console.warn('w: ' + game.world.width + ' ,h: ' + game.world.height);
+            menu_bg = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'menu_bg');
+            button = game.add.button(270 , 1030, 'start_button', actionOnClick);
+        }
+       
         menu_bg.fixedToCamera = true;
 
-        button = game.add.button(game.world.width / 2, game.world.height * 0.63, 'start_button', actionOnClick);
-        //button.fixedToCamera = true;
+        button.scale.setTo(2, 2);
 
-        button.scale.setTo(1.5,1.5);
-
-        timer.destroy();
+        if(timer) {
+            timer.destroy();
+        }
 
     }
 
@@ -131,33 +143,7 @@
                 level_bg.fixedToCamera = true;
 
 
-                player = game.add.sprite(50, game.world.height - 40, 'dude');
-
-                game.physics.arcade.enable(player);
-
-
-                player.body.gravity.y = 600;
-                player.body.collideWorldBounds = true;
-
-             // для напряденного ержа   
-                player.animations.add( 'left',  [2,3], 10, true );
-                player.animations.add( 'right', [0,4], 10, true );
-
-                // для бутылки воды
-             //   player.animations.add( 'left',  [0,1], 10, true );
-              //  player.animations.add( 'right', [3,4], 10, true );
-
-
-              // булочка
-              // player.animations.add( 'left',  [0,1], 10, true );
-              // player.animations.add( 'right', [3,4], 10, true );
-
-
-
-                player.anchor.setTo(0.5 ,0.5);
-
-                game.camera.follow(player);
-
+        
                 cursors = game.input.keyboard.createCursorKeys();
 
                 map = game.add.tilemap('level_1');
@@ -166,12 +152,12 @@
                 map.addTilesetImage('star');
 
 
-                map.setCollisionBetween(1, 12);
+                map.setCollisionBetween(1, 13);
 
                 // 28 it's id of tile death
                 map.setTileIndexCallback(55, death, this);
 
-                // WTF?! This will set the map location 2, 0 to call the function
+                // WTF?! This will set the map location 0, 0 to call the function
                 map.setTileLocationCallback(0, 0, 1, 1, death, this);
 
 
@@ -185,7 +171,7 @@
                 coins.callAll('animations.play', 'animations', 'spin');
 
 
-                game.physics.arcade.enable(coins);
+                coins.physicsBodyType = Phaser.Physics.ARCADE;
 
 
                 coins_count = coins.length;
@@ -194,15 +180,64 @@
                 layer = map.createLayer('Tiled layers 1');
 
                 layer.resizeWorld();
-                //  layer.debug = true;
+               
+
+                layer.debug = true;
+
+
+                   player = game.add.sprite(50, game.world.height-40 , 'dude');
+
+                   game.physics.enable(player, Phaser.Physics.ARCADE);
+
+
+                   player.body.gravity.y = 600;
+                   player.body.collideWorldBounds = true;
+
+                // для напряденного ержа   
+                   player.animations.add( 'left',  [2,3], 10, true );
+                   player.animations.add( 'right', [0,4], 10, true );
+
+                   // для бутылки воды
+                //   player.animations.add( 'left',  [0,1], 10, true );
+                 //  player.animations.add( 'right', [3,4], 10, true );
+
+
+                 // булочка
+                 // player.animations.add( 'left',  [0,1], 10, true );
+                 // player.animations.add( 'right', [3,4], 10, true );
+
+
+
+                   player.anchor.setTo(0.5 ,0.5);
+
+                   game.camera.follow(player);
+
+                if (splashscreen) {
+                    splashscreen.kill();
+                }
+
+                splashscreen =  game.add.sprite(game.world.width/4, game.world.height/5 + 70, 'splashscreen');
+                splashscreen.animations.add('load');
+                splashscreen.fixedToCamera = true;
+                splashscreen.scale.setTo(2, 2);
+                splashscreen.alpha = 0;
 
 
                 //  The score
-                scoreText = game.add.text(16, 16, 'Score: ' + score, { fontSize: '32px', fill: '#ED1A28' });
+                scoreText = game.add.text(16, 16, 'Score: ' + score + ' %', { fontSize: '32px', fill: '#ED1A28' });
                 scoreText.fixedToCamera = true;
 
+                youLoseText = game.add.text(game.world.width/4 - 60, game.world.height/5, 'Вы проиграли!', { fontSize: '128px', fill: '#ED1A28' });
+                youLoseText.fixedToCamera = true;
+                youLoseText.alpha = 0;
+
+
+                hearts = game.add.group();
+
                 for(var i = 0; i < lives; i++ ) {
-                    heart = game.add.sprite(game.world.width/2 - 55 *  (i - 1), 16, 'heart');
+                 //   heart = game.add.sprite(game.world.width/2 - 55 *  (i - 1), 16, 'heart');
+                  //  heart.fixedToCamera = true;
+                    heart =  hearts.create(game.world.width/2 - 55 *  (i - 1), 16, 'heart');
                     heart.fixedToCamera = true;
                 }
 
@@ -210,7 +245,7 @@
               //  livesText.fixedToCamera = true;
 
 
-                game.time.events.add(Phaser.Timer.SECOND *  10, changeGravity, this);
+                game.time.events.add(Phaser.Timer.SECOND *  5, changeGravity, this);
 
             break;
             case 2:
@@ -309,9 +344,9 @@
         music = game.add.audio('boden');
         music.play();
 
-        intro();
+     //   intro();
 
-     //   game.time.events.add(Phaser.Timer.SECOND * intro_sec,  load_menu ,this);
+       game.time.events.add(Phaser.Timer.SECOND * 1,  load_menu ,this);
 
     }
 
@@ -409,15 +444,32 @@
         if(sprite != player) {
             return;
         }
+        if (!isGameStarted) {
+            return;
+        }
 
         isGameStarted = false;
 
         console.warn('You are dead!');
+
         lives -= 1;
+        score = 0;
+        scoreText.text = "Score: 0%";
+
+
        // livesText.text = "Lives: " + lives;
 
-        // youLoseText = game.add.text(game.world.width / 2, game.world.height / 2, 'Вы проиграли!', { fontSize: '32px', fill: '#ED1A28' });
-        // youLoseText.fixedToCamera = true;
+        youLoseText.alpha = 1;
+        splashscreen.alpha = 1;
+
+        splashscreen.animations.play('load', 15, true);
+
+        hearts.forEach(function(H){
+            H.kill();
+        })
+
+       // heart.destroy();
+
 
         game.stage.backgroundColor = '#FFFFFF';  
 
@@ -427,21 +479,14 @@
         if( lives <= 0 ) {
             game_over();
         } else {
-            load_level();
+
+            game.time.events.add(Phaser.Timer.SECOND * 2, function () {
+                youLoseText.destroy();
+                load_level();
+            }, this);
         }
 
-       
-
-        // game.time.events.add(Phaser.Timer.SECOND * 5, function () {
-
-
-
-        //     youLoseText.destroy();
-       
-        // }, this);
-
-
-      
+         
        
 
     }
@@ -458,6 +503,7 @@
         level_bg.kill();
 
 
+
       //  game.input.keyboard.clearCaptures();
 
     }
@@ -470,15 +516,17 @@
 
         load_menu ();
 
+
+
     }
 
     function collectCoin(player, coin) {
 
         coin.kill();
         
-        score += 10;
+        score += 1;
 
-        scoreText.text = "Score: " + score;
+        scoreText.text = "Score: " + parseInt( score * 100 / coins_count ) + '%';
 
         coins_count -= 1;
 
@@ -486,7 +534,7 @@
 
         if ( coins_count <= 0 ) {
             level += 1;
-            score += 100;
+            score = 0;
             erase_all();
             load_level();
         }
