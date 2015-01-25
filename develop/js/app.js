@@ -22,7 +22,7 @@
         coins,
         lives       = 3,
         livesText,
-        level       = 2,
+        level       = 1,
         button_start_game,
         intro_sec   = 2,
         isGameStarted = false,
@@ -39,7 +39,7 @@
 
     function preload() {
 
-        game.load.image('star',             'assets/res/star.png'); // WHY i need this???
+       // game.load.image('star',             'assets/res/star.png'); // WHY i need this???
 
        // game.load.image('death',             'assets/res/death.png');
 
@@ -47,7 +47,7 @@
        
 
         game.load.image('heart',             'assets/res/heart.png');
-        game.load.image('darkness',             'assets/res/darkness.gif');
+     //   game.load.image('darkness',             'assets/res/darkness.gif');
 
 
 
@@ -103,7 +103,7 @@
             menu_bg = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'menu_bg');
             button = game.add.button(game.world.width / 2.8 , game.world.height / 1.7, 'start_button', actionOnClick);
         } else {
-            console.warn('w: ' + game.world.width + ' ,h: ' + game.world.height);
+     //       console.warn('w: ' + game.world.width + ' ,h: ' + game.world.height);
             menu_bg = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'menu_bg');
             button = game.add.button(270 , 1030, 'start_button', actionOnClick);
         }
@@ -149,7 +149,7 @@
 
             case 1 : 
 
-                сonsole.log("Level: 1");
+              
 
                 game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -235,7 +235,7 @@
 
 
                 //  The score
-                scoreText = game.add.text(16, 16, 'Score: ' + score + ' %', { fontSize: '32px', fill: '#ED1A28' });
+                scoreText = game.add.text(16, 16, 'Score: ' + '0/' + coins_count, { fontSize: '32px', fill: '#ED1A28' });
                 scoreText.fixedToCamera = true;
 
                 youLoseText = game.add.text(game.world.width/4 - 60, game.world.height/5, 'Вы проиграли!', { fontSize: '128px', fill: '#ED1A28' });
@@ -256,7 +256,7 @@
             break;
             case 2:
 
-                console.log("level 2");
+              //  console.log("level 2");
 
                 game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -357,7 +357,7 @@
 
             break;
             case 3:
-                console.warn('Level 3. Not ready yet!!!');
+            //    console.warn('Level 3. Not ready yet!!!');
                 youLoseText.text = "Level 3. Not ready yet!!!";
 
             break;
@@ -449,9 +449,9 @@
         music.play();
 
 
-     //   intro();
+        intro();
 
-      game.time.events.add(Phaser.Timer.SECOND * 1,  load_menu ,this);
+     // game.time.events.add(Phaser.Timer.SECOND * 1,  load_menu ,this);
 
     }
 
@@ -553,7 +553,7 @@
 
     function death (sprite) {
 
-        console.log("death");
+      //  console.log("death");
 
         if(sprite != player) {
             return;
@@ -564,7 +564,7 @@
 
         isGameStarted = false;
 
-        console.warn('You are dead!');
+       // console.warn('You are dead!');
 
         lives -= 1;
         score = 0;
@@ -582,13 +582,10 @@
             H.kill();
         })
 
-       // heart.destroy();
-
-
         game.stage.backgroundColor = '#FFFFFF';  
 
         
-       // erase_all();
+        erase_all();
 
         if( lives <= 0 ) {
             game_over();
@@ -622,7 +619,7 @@
 
     function game_over () {
 
-        console.warn('Game over');
+//        console.warn('Game over');
 
         erase_all();
 
@@ -638,11 +635,11 @@
         
         score += 1;
 
-        scoreText.text = "Score: " + parseInt( score * 100 / coins_count ) + '%';
+        scoreText.text = "Score: " +  score + "/" + coins_count;
 
         coins_count -= 1;
 
-         console.warn('Coins left: ' + coins_count);
+      //   console.warn('Coins left: ' + coins_count);
 
         if ( coins_count <= 0 ) {
             level += 1;
